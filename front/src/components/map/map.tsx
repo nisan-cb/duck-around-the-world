@@ -3,10 +3,14 @@ import 'ol/ol.css';
 import { Map as OlMap, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
+import { useSelector, useDispatch } from 'react-redux';
+import {actions} from '../../store/mapSlice'
 
 
 const Map: React.FC = () => {
   const mapRef = useRef<HTMLDivElement | null>(null);
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (mapRef.current) {
       const map = new OlMap({
@@ -21,6 +25,12 @@ const Map: React.FC = () => {
             center: [36, 30],
             zoom: 1,
         }),
+      });
+
+      map.on('click', (event) => {
+        const clickedCoords = event.coordinate;
+        dispatch(actions.setSelectedCoords(clickedCoords as [number, number]))
+        console.log('Coordinates:', clickedCoords);
       });
 
       // Clean up on component unmount
